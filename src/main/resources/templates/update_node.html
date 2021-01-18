@@ -24,10 +24,11 @@
         <p th:text="${nodeNameIssue}"></p>
     </div>
     <form action="#" th:action="@{/updateNode}" th:object="${node}" method="post">
+        <input type="hidden" th:field="*{id}">
         <div class="form-group row">
-<!--            <label class="col-sm-2 col-form-label">Node Name</label>-->
+            <label class="col-sm-2 col-form-label">Node Name</label>
             <div class="col-sm-10">
-                <input type="hidden" pattern="[A-Za-z0-9]+" th:field="*{nodeName}" class="col-sm-2 col-form-label"
+                <input type="text" pattern="[A-Za-z0-9]+" th:field="*{nodeName}" class="col-sm-2 col-form-label"
                        autofocus required>
             </div>
         </div>

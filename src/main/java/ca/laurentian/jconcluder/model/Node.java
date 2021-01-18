@@ -9,6 +9,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "NodeName",
@@ -20,12 +26,23 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Entity
+@Table
 public class Node {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
     @JsonProperty("NodeName")
     public String nodeName;
     @JsonProperty("ParentNode")
     public String parentNode;
     @JsonProperty("Size")
-    public Object size;
+    public String size;
+
+    public Node(String nodeName, String parentNode, String size) {
+        this.nodeName = nodeName;
+        this.parentNode = parentNode;
+        this.size = size;
+    }
 }

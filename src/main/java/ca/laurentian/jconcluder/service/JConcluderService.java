@@ -1,129 +1,107 @@
 package ca.laurentian.jconcluder.service;
 
 import ca.laurentian.jconcluder.model.Node;
+import ca.laurentian.jconcluder.repository.NodeRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 @Service
 public class JConcluderService {
 
-    static List<List<Object>> graphData = new ArrayList<>();
-    static List<Node> nodeList = new ArrayList<>();
+    private NodeRepository nodeRepository;
 
-    public List<List<Object>> getAllGraphData() {
-        if (graphData.isEmpty()) {
+    public JConcluderService(NodeRepository nodeRepository) {
+        this.nodeRepository = nodeRepository;
+    }
+
+    public List<List<Object>> getAllGraphData() throws JsonProcessingException {
+        List<Node> allNodes = nodeRepository.findAll();
+        if (allNodes.isEmpty()) {
             addIfEmptyOrResetGraph();
+        }
+        return repositoryToGraphNode();
+    }
+
+    private List<List<Object>> repositoryToGraphNode() throws JsonProcessingException {
+        List<Node> allNodes = nodeRepository.findAll();
+        List<List<Object>> graphData = new LinkedList<>();
+        for (int i = 0; i < allNodes.size(); i++) {
+            if (i == 0) {
+                graphData.add(i, Arrays.asList(allNodes.get(i).getNodeName(), allNodes.get(i).getParentNode(),
+                                               allNodes.get(i).getSize()));
+            } else {
+                graphData.add(i, Arrays.asList(allNodes.get(i).getNodeName(), allNodes.get(i).getParentNode(),
+                                               Integer.parseInt(allNodes.get(i).getSize())));
+            }
         }
         return graphData;
     }
 
     private void addIfEmptyOrResetGraph() {
-        List<List<Object>> tempGraphNode = new ArrayList<>();
-        List<Node> nodeArrayList = new ArrayList<>();
-        nodeArrayList.add(new Node("Node", "Parent", "Size"));
-        nodeArrayList.add(new Node("ROOT", null, 100));
-        for (int i = 0; i < nodeArrayList.size(); i++) {
-            tempGraphNode.add(i, Arrays.asList(nodeArrayList.get(i).nodeName, nodeArrayList.get(i).parentNode,
-                                               nodeArrayList.get(i).size));
-        }
-        nodeList = nodeArrayList;
-        graphData = tempGraphNode;
+        nodeRepository.deleteAll();
+        List<Node> nodeLinkedList = new LinkedList<>();
+        nodeLinkedList.add(new Node("Node", "Parent", "Size"));
+        nodeLinkedList.add(new Node("ROOT", null, "100"));
+        nodeRepository.saveAll(nodeLinkedList);
     }
 
-    public List<List<Object>> resetGraph() {
+    public List<List<Object>> resetGraph() throws JsonProcessingException {
         addIfEmptyOrResetGraph();
-        return graphData;
+        return repositoryToGraphNode();
     }
 
     public void saveNode(Node node) {
-        List<Node> nodeArrayList = new ArrayList<>();
-        nodeArrayList.add(new Node(node.getNodeName(), node.getParentNode(), node.getSize()));
-        for (int i = 0; i < nodeArrayList.size(); i++) {
-            nodeList.add(nodeList.size(), node);
-            graphData.add(graphData.size(),
-                          Arrays.asList(nodeArrayList.get(i).getNodeName(), nodeArrayList.get(i).getParentNode(),
-                                        Integer.parseInt(nodeArrayList.get(i).getSize().toString())));
-        }
+        nodeRepository.save(node);
     }
 
-    public List<String> getListOfNodes() {
-        if (nodeList.get(0).getNodeName().equals("Node")) {
-            nodeList.remove(0);
-        }
-        return nodeList.stream().map(e -> new String(e.getNodeName())).collect(Collectors.toList());
-
+    public List<String> getListOfNodesNames() {
+        List<Node> listOfAllNode = nodeRepository.findAll();
+        return listOfAllNode.stream().filter(e -> !e.getNodeName().equalsIgnoreCase("Node")).map(
+                e1 -> new String(e1.getNodeName())).collect(Collectors.toList());
     }
 
-    public boolean findNode(Node node) {
-        boolean flag = false;
-        for (Node nd : nodeList) {
-            if (nd.getNodeName().equals(node.getNodeName())) {
-                flag = true;
-            }
-        }
-        return flag;
-    }
+//    public boolean findNode(Node node) {
+//        Node nodeFindByNodeId = nodeRepository.findById(node.getId()).orElse(null);
+//        boolean flag = false;
+//        for (Node nd : nodeList) {
+//            if (nd.getNodeName().equals(node.getNodeName())) {
+//                flag = true;
+//            }
+//        }
+//        return flag;
+//    }
 
-    public Node findNodeByNode(String nodeName) {
-        Node tempNode = null;
-        for (Node nd : nodeList) {
-            if (nd.getNodeName().equals(nodeName)) {
-                tempNode = nd;
-            } else {
-               tempNode = null;
-            }
-        }
-        return tempNode;
+    public Node findNodeByNode(Long id) {
+        return nodeRepository.findById(id).orElse(null);
     }
 
     public List<Node> getNodesForTable() {
-        CopyOnWriteArrayList<Node> getNodeForTable = new CopyOnWriteArrayList<>(nodeList);
-        for (Node node : getNodeForTable) {
-            if (node.getNodeName().equals("Node")) {
-                getNodeForTable.remove(node);
-            }
-            if (node.getNodeName().equals("ROOT")) {
-                getNodeForTable.remove(node);
-            }
-        }
-        return getNodeForTable;
+        List<Node> listOfAllNode = nodeRepository.findAll();
+
+        return listOfAllNode.stream().filter(node -> !node.getNodeName().equalsIgnoreCase("Node")
+                                                     && !node.getNodeName().equalsIgnoreCase("ROOT")).collect(
+                Collectors.toList());
 
     }
 
-    public void deleteNode(String nodeName) {
-        CopyOnWriteArrayList<Node> tempNodeList = new CopyOnWriteArrayList<>(nodeList);
-        for (Node node:tempNodeList) {
-            if(node.getNodeName().equalsIgnoreCase(nodeName)){
-                tempNodeList.remove(node);
-            }
+    public void deleteNode(Long id) {
+        Node node = nodeRepository.findById(id).orElse(null);
+        if (node != null) {
+            nodeRepository.delete(node);
         }
-        List<Object> ob = new ArrayList<>();
-        for (List<Object> object : graphData){
-            if(object.get(0).toString().equalsIgnoreCase(nodeName)){
-                ob=object;
-            }
-        }
-        graphData.remove(ob);
-        nodeList = tempNodeList;
+
     }
 
     public void updateNode(Node node) {
-        for(Node nd:nodeList){
-            if(nd.getNodeName().equalsIgnoreCase(node.getNodeName())){
-                nd.setParentNode(node.getParentNode());
-                nd.setSize(node.getSize());
-            }
-        }
-        for (List<Object> object : graphData){
-            if(object.get(0).toString().equalsIgnoreCase(node.getNodeName())){
-               object.set(1,node.getParentNode());
-               object.set(2,node.getSize());
-            }
-        }
+        Node nodeFromRepo = nodeRepository.findById(node.getId()).orElse(null);
+        nodeFromRepo.setNodeName(node.getNodeName());
+        nodeFromRepo.setParentNode(node.getParentNode());
+        nodeFromRepo.setSize(node.getSize());
+        nodeRepository.save(node);
     }
 }

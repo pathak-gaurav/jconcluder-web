@@ -2,6 +2,7 @@ package ca.laurentian.jconcluder.controller;
 
 import ca.laurentian.jconcluder.model.Node;
 import ca.laurentian.jconcluder.service.JConcluderService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +22,7 @@ public class ConcluderController {
     }
 
     @GetMapping("/")
-    public String getPieChart(Model model) {
+    public String getPieChart(Model model) throws JsonProcessingException {
         List<List<Object>> graphData = concluderService.getAllGraphData();
         List<Node> nodesForTable = concluderService.getNodesForTable();
         model.addAttribute("chartData", graphData);
@@ -31,7 +32,7 @@ public class ConcluderController {
 
     @GetMapping("/showAddNodeForm")
     public String showAddNodeForm(Model model) {
-        List<String> listOfNodes = concluderService.getListOfNodes();
+        List<String> listOfNodes = concluderService.getListOfNodesNames();
         Node node = new Node();
         model.addAttribute("node", node);
         model.addAttribute("listOfNodes", listOfNodes);
@@ -39,16 +40,16 @@ public class ConcluderController {
     }
 
     @GetMapping("/resetGraph")
-    public String resetGraph(Model model) {
+    public String resetGraph(Model model) throws JsonProcessingException {
         model.addAttribute("chartData", concluderService.resetGraph());
         return "redirect:/";
     }
 
     @PostMapping("/saveNode")
     public String saveEmployee(@ModelAttribute("node") Node node, Model model) {
-        List<String> listOfNodes = concluderService.getListOfNodes();
+        List<String> listOfNodes = concluderService.getListOfNodesNames();
         model.addAttribute("listOfNodes", listOfNodes);
-        if (concluderService.findNode(node)) {
+        if (listOfNodes.contains(node.getNodeName())) {
             model.addAttribute("existedNodeName", "Node name already exist, try different name");
             return "add_node";
         } else {
@@ -57,16 +58,16 @@ public class ConcluderController {
         }
     }
 
-    @GetMapping("/deleteNode/{nodeName}")
-    public String deleteNode(@PathVariable("nodeName") String nodeName, Model model) {
-        concluderService.deleteNode(nodeName);
+    @GetMapping("/deleteNode/{id}")
+    public String deleteNode(@PathVariable("id") Long id, Model model) {
+        concluderService.deleteNode(id);
         return "redirect:/";
     }
 
-    @GetMapping("/showFormUpdateNode/{nodeName}")
-    public String showFormUpdateNode(@PathVariable("nodeName")String nodeName,Model model){
-        Node node = concluderService.findNodeByNode(nodeName);
-        List<String> listOfNodes = concluderService.getListOfNodes();
+    @GetMapping("/showFormUpdateNode/{id}")
+    public String showFormUpdateNode(@PathVariable("id")Long id,Model model){
+        Node node = concluderService.findNodeByNode(id);
+        List<String> listOfNodes = concluderService.getListOfNodesNames();
         model.addAttribute("node", node);
         model.addAttribute("listOfNodes", listOfNodes);
         return "update_node";
@@ -74,10 +75,14 @@ public class ConcluderController {
 
     @PostMapping("/updateNode")
     public String updateNode(@ModelAttribute("node") Node node, Model model) {
-        List<String> listOfNodes = concluderService.getListOfNodes();
+        List<String> listOfNodes = concluderService.getListOfNodesNames();
         model.addAttribute("listOfNodes", listOfNodes);
+        Node nodeById = concluderService.findNodeByNode(node.getId());
         if(node.getNodeName().equals(node.getParentNode())){
             model.addAttribute("nodeNameIssue","Node Name and Parent Node cannot be same. Try different");
+            return "update_node";
+        }else if(node.getParentNode().equalsIgnoreCase(nodeById.getNodeName())){
+            model.addAttribute("nodeNameIssue","You are trying to assign parent node, which you are going to remove by renaming node name. Try different");
             return "update_node";
         }
         concluderService.updateNode(node);
