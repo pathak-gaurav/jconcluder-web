@@ -65,17 +65,6 @@ public class JConcluderService {
                 e1 -> new String(e1.getNodeName())).collect(Collectors.toList());
     }
 
-//    public boolean findNode(Node node) {
-//        Node nodeFindByNodeId = nodeRepository.findById(node.getId()).orElse(null);
-//        boolean flag = false;
-//        for (Node nd : nodeList) {
-//            if (nd.getNodeName().equals(node.getNodeName())) {
-//                flag = true;
-//            }
-//        }
-//        return flag;
-//    }
-
     public Node findNodeByNode(Long id) {
         return nodeRepository.findById(id).orElse(null);
     }
