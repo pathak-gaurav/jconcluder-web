@@ -1,0 +1,65 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>JConcluder Add Node</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+</head>
+<style>
+    .center_div {
+        margin: 0 auto;
+        width: 80% /* value of your choice which suits your alignment */
+    }
+</style>
+<body>
+<div class="container center_div">
+    <br>
+    <div>
+        <h3 class="h3 mb-6 col-6 font-weight-normal display-6">JConcluder Add Node</h3>
+        <hr>
+    </div>
+    <br>
+    <div th:if="${existedNodeName != null}" class="alert alert-danger notification" role="alert">
+        <p th:text="${existedNodeName}"></p>
+    </div>
+    <form action="#" th:action="@{/saveNode}" th:object="${node}" method="post">
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Node Name</label>
+            <div class="col-sm-10">
+                <input type="text" pattern="[A-Za-z0-9]+" th:field="*{nodeName}" class="col-sm-2 col-form-label"
+                       autofocus required>
+            </div>
+        </div>
+        <br>
+        <div class="form-group row">
+            <label for="parentNode" class="col-sm-2 col-form-label">Parent Node</label>
+            <div class="col-sm-10">
+                <select th:field="*{parentNode}" id="parentNode" class="col-sm-2 col-form-label">
+                    <option th:each="nd : ${listOfNodes}"
+                            th:value="${nd}"
+                            th:text="${nd}">node
+                    </option>
+                </select>
+            </div>
+        </div>
+        <br>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Size</label>
+            <div class="col-sm-10">
+                <input type="number" th:field="*{size}" class="col-sm-2 col-form-label " th:min="1" th:max="100"
+                       autofocus required>
+            </div>
+        </div>
+        <br>
+        <div class="form-group row">
+            <div class="col-sm-10">
+                <button type="submit" class="col-sm-2 col-form-label btn btn-primary">Submit</button>
+                <a th:href="@{/}" class="col-sm-2 col-form-label btn btn-primary">Back to TreeMap</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
