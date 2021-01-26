@@ -135,6 +135,7 @@ public class JConcluderService {
     }
 
     public void updateNode(Node node) {
+        allXByXServiceDeleteRepository();
         Node nodeFromRepo = nodeRepository.findById(node.getId()).orElse(null);
         nodeFromRepo.setNodeName(node.getNodeName());
         nodeFromRepo.setParentNode(node.getParentNode());
