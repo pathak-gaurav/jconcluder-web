@@ -33,6 +33,10 @@ public class ThreeByThree {
     private double reconstructedGMColumn1;
     private double reconstructedGMColumn2;
     private double reconstructedGMColumn3;
+    private String finalDifferenceColumn1;
+    private String finalDifferenceColumn2;
+    private String finalDifferenceColumn3;
+
 
     public ThreeByThree(String nodeName, double column1, double column2, double column3) {
         this.nodeName = nodeName;

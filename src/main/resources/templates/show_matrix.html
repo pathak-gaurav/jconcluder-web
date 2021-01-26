@@ -1,0 +1,65 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>JConcluder Matrix</title>
+    <link rel="icon" type="image/png" href="/img/law.png"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+</head>
+<body>
+<div class="container center_div">
+    <br>
+    <div>
+        <h3 class="h3 mb-6 col-6 font-weight-normal display-6">JConcluder Matrix</h3>
+        <hr>
+    </div>
+    <br>
+    <div th:if="${nodeNameIssue != null}" class="alert alert-danger notification" role="alert">
+        <p th:text="${nodeNameIssue}"></p>
+    </div>
+    <div class="container" th:border="1">
+        <div class="col-sm-10">
+            <a th:href="@{/}" class="col-sm-2 col-form-label btn btn-primary">Back to TreeMap</a>
+        </div>
+        <br>
+        <h6 class="h6 mb-6 col-6 font-weight-normal display-6">Original Matrix</h6>
+        <table class="table table-bordered border-primary">
+            <tr th:each="node : ${threeByThreeList}">
+                <td><p th:text="${node.column1}"/></td>
+                <td><p th:text="${node.column2}"/></td>
+                <td><p th:text="${node.column3}"/></td>
+            </tr>
+        </table>
+
+        <table class="table table-bordered border-primary">
+            <h6 class="h6 mb-6 col-6 font-weight-normal display-6">Geometric Mean & Normalization</h6>
+            <tr th:each="node : ${threeByThreeList}">
+                <td><p th:text="${node.geometricMean}"/></td>
+                <td><p th:text="${node.normalisation}"/></td>
+            </tr>
+        </table>
+
+        <table class="table table-bordered border-primary">
+            <h6 class="h6 mb-6 col-6 font-weight-normal display-6">Reconstructed Matrix from Geometric Mean & Normalization</h6>
+            <tr th:each="node : ${threeByThreeList}">
+                <td><p th:text="${node.reconstructedGMColumn1}"/></td>
+                <td><p th:text="${node.reconstructedGMColumn2}"/></td>
+                <td><p th:text="${node.reconstructedGMColumn3}"/></td>
+            </tr>
+        </table>
+
+        <table class="table table-bordered border-primary">
+            <h6 class="h6 mb-6 col-6 font-weight-normal display-6">Final Matrix</h6>
+            <tr th:each="node : ${threeByThreeList}">
+                <td><p th:text="${node.finalDifferenceColumn1}"/></td>
+                <td><p th:text="${node.finalDifferenceColumn2}"/></td>
+                <td><p th:text="${node.finalDifferenceColumn3}"/></td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

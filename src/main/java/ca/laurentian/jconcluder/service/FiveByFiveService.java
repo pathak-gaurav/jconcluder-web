@@ -21,7 +21,7 @@ public class FiveByFiveService {
         this.nodeRepository = nodeRepository;
     }
 
-    public void buildMatrixData(String eachNode, List<Node> nodeList) {
+    public void buildMatrixData(String eachNode) {
         List<Node> listOfNodeForSize = nodeRepository.findByParentNode(eachNode);
         List<FiveByFive> FiveByFiveList = new LinkedList<>();
         FiveByFiveList.add(

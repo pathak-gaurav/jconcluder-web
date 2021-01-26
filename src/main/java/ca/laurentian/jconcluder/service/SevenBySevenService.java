@@ -20,7 +20,7 @@ public class SevenBySevenService {
         this.nodeRepository = nodeRepository;
     }
 
-    public void buildMatrixData(String eachNode, List<Node> nodeList) {
+    public void buildMatrixData(String eachNode) {
         List<Node> listOfNodeForSize = nodeRepository.findByParentNode(eachNode);
         List<SevenBySeven> SevenBySevenList = new LinkedList<>();
         SevenBySevenList.add(

@@ -1,6 +1,7 @@
 package ca.laurentian.jconcluder.service;
 
 import ca.laurentian.jconcluder.model.Node;
+import ca.laurentian.jconcluder.model.ThreeByThree;
 import ca.laurentian.jconcluder.repository.EightByEightRepository;
 import ca.laurentian.jconcluder.repository.FiveByFiveRepository;
 import ca.laurentian.jconcluder.repository.FourByFourRepository;
@@ -8,7 +9,6 @@ import ca.laurentian.jconcluder.repository.NodeRepository;
 import ca.laurentian.jconcluder.repository.SevenBySevenRepository;
 import ca.laurentian.jconcluder.repository.SixBySixRepository;
 import ca.laurentian.jconcluder.repository.ThreeByThreeRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -56,7 +56,7 @@ public class JConcluderService {
         this.eightByEightRepository = eightByEightRepository;
     }
 
-    public List<List<Object>> getAllGraphData() throws JsonProcessingException {
+    public List<List<Object>> getAllGraphData()  {
         List<Node> allNodes = nodeRepository.findAll();
         if (allNodes.isEmpty()) {
             addIfEmptyOrResetGraph();
@@ -64,7 +64,7 @@ public class JConcluderService {
         return repositoryToGraphNode();
     }
 
-    private List<List<Object>> repositoryToGraphNode() throws JsonProcessingException {
+    private List<List<Object>> repositoryToGraphNode() {
         List<Node> allNodes = nodeRepository.findAll();
         List<List<Object>> graphData = new LinkedList<>();
         for (int i = 0; i < allNodes.size(); i++) {
@@ -97,41 +97,14 @@ public class JConcluderService {
         eightByEightRepository.deleteAll();
     }
 
-    public List<List<Object>> resetGraph() throws JsonProcessingException {
+    public List<List<Object>> resetGraph()  {
         addIfEmptyOrResetGraph();
         return repositoryToGraphNode();
     }
 
     public void saveNode(Node node) {
         nodeRepository.save(node);
-        List<Node> nodeList = nodeRepository.findAll();
-        List<String> listOfNodesNames = getListOfNodesNames();
-        int count = 0;
-        for (Node nd : nodeList) {
-            for (String eachNode : listOfNodesNames) {
-                if (eachNode.equalsIgnoreCase(nd.getParentNode())) {
-                    count = count + 1;
-                    if (count == 3) {
-                        threeByThreeService.buildMatrixData(eachNode, nodeList);
-                    }
-//                    if (count == 6) {
-//                        fourByFourService.buildMatrixData(eachNode, nodeList);
-//                    }
-//                    if (count == 10) {
-//                        fiveByFiveService.buildMatrixData(eachNode, nodeList);
-//                    }
-//                    if (count == 6) {
-//                        sixBySixService.buildMatrixData(eachNode, nodeList);
-//                    }
-//                    if (count == 7) {
-//                        sevenBySevenService.buildMatrixData(eachNode, nodeList);
-//                    }
-//                    if (count == 8) {
-//                        eightByEightService.buildMatrixData(eachNode, nodeList);
-//                    }
-                }
-            }
-        }
+
     }
 
     public List<String> getListOfNodesNames() {
@@ -168,4 +141,38 @@ public class JConcluderService {
         nodeFromRepo.setSize(node.getSize());
         nodeRepository.save(node);
     }
+
+    public List<ThreeByThree> showAllMatrix(String node) {
+        List<Node> nodeList = nodeRepository.findByParentNode(node);
+        if (nodeList.size() == 3) {
+            List<ThreeByThree> byNode = threeByThreeRepository.findByNode(node);
+            if(byNode.isEmpty()) {
+                return threeByThreeService.buildMatrixData(node);
+            }else{
+                return byNode;
+            }
+        }
+        if (nodeList.size() == 6) {
+            fourByFourService.buildMatrixData(node);
+        }
+        if (nodeList.size() == 10) {
+            fiveByFiveService.buildMatrixData(node);
+        }
+        if (nodeList.size() == 15) {
+            sixBySixService.buildMatrixData(node);
+        }
+        if (nodeList.size() == 21) {
+            sevenBySevenService.buildMatrixData(node);
+        }
+        if (nodeList.size() == 28) {
+            eightByEightService.buildMatrixData(node);
+        }
+        return null;
+    }
+
+    public List<Node> findByParentNode(String node){
+        return nodeRepository.findByParentNode(node);
+    }
+
+
 }

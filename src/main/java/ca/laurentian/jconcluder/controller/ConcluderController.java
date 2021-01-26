@@ -1,6 +1,7 @@
 package ca.laurentian.jconcluder.controller;
 
 import ca.laurentian.jconcluder.model.Node;
+import ca.laurentian.jconcluder.model.ThreeByThree;
 import ca.laurentian.jconcluder.service.JConcluderService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Controller;
@@ -22,12 +23,22 @@ public class ConcluderController {
     }
 
     @GetMapping("/")
-    public String getPieChart(Model model) throws JsonProcessingException {
+    public String getPieChart(Model model)  {
+        loadHomePageDetails(model);
+        return "jconcluder";
+    }
+
+    private void loadHomePageDetails(Model model)  {
         List<List<Object>> graphData = concluderService.getAllGraphData();
         List<Node> nodesForTable = concluderService.getNodesForTable();
         model.addAttribute("chartData", graphData);
         model.addAttribute("nodesForTable", nodesForTable);
-        return "jconcluder";
+
+        //Analyze Part
+        List<String> listOfNodes = concluderService.getListOfNodesNames();
+        Node node = new Node();
+        model.addAttribute("node", node);
+        model.addAttribute("listOfNodes", listOfNodes);
     }
 
     @GetMapping("/showAddNodeForm")
@@ -89,4 +100,19 @@ public class ConcluderController {
         return "redirect:/";
     }
 
+    @PostMapping("/showMatrix")
+    public String showMatrix(@ModelAttribute("node") Node node, Model model) {
+        String parentNode = node.getParentNode();
+        if(concluderService.findByParentNode(parentNode).size()!=3){
+            model.addAttribute("nodeNameIssue","Selected Node does not have size 3 or more.");
+            loadHomePageDetails(model);
+            return "jconcluder";
+        }
+        List<ThreeByThree> threeByThreeList = concluderService.showAllMatrix(parentNode);
+        model.addAttribute("threeByThreeList",threeByThreeList);
+
+        return "show_matrix";
+    }
+
+    //move whole showMatrix to Controller so no list hassel issue.
 }

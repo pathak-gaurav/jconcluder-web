@@ -20,7 +20,7 @@ public class SixBySixService {
         this.nodeRepository = nodeRepository;
     }
 
-    public void buildMatrixData(String eachNode, List<Node> nodeList) {
+    public void buildMatrixData(String eachNode) {
         List<Node> listOfNodeForSize = nodeRepository.findByParentNode(eachNode);
         List<SixBySix> SixBySixList = new LinkedList<>();
         SixBySixList.add(
