@@ -6,18 +6,29 @@
     <title>JConcluder</title>
     <link rel="icon" type="image/png" href="/img/law.png"/>
     <script
-            src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+            src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet"
           href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+
     <script type="text/javascript"
             src="https://www.gstatic.com/charts/loader.js"></script>
-    <!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"-->
-    <!--          integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">-->
     <style>
         a:link {
             color: white;
-            background-color: blue;
+            /*background-color: none;*/
             text-decoration: none;
+        }
+
+        .footer {
+            background-color: darkslategray;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 20px;
+            width: 100%;
+            overflow: hidden;
+            text-decoration-color: black;
         }
 
     </style>
@@ -30,10 +41,10 @@
     <hr>
     <div class="container" id="chart_div">
     </div>
-    <div><a th:href="@{/showAddNodeForm}" class="btn btn-warning mb-1 col-2">Add Node</a>
-        <a th:href="@{/resetGraph}" class="btn btn-warning mb-1 col-2"
+    <div><a th:href="@{/showAddNodeForm}" class="btn btn-primary mb-1 col-2">Add Node</a>
+        <a th:href="@{/resetGraph}" class="btn btn-danger mb-1 col-2"
            onclick="return confirm('Are you sure you want to reset Tree Map?');">Reset Tree Map</a>
-        <a th:href="@{/}" class="btn btn-warning mb-1 col-2" style="float: right;">Refresh</a>
+        <a th:href="@{/}" class="btn btn-danger mb-1 col-2" style="float: right;">Refresh</a>
     </div>
 </div>
 
@@ -85,13 +96,13 @@
         <p th:text="${nodeNameIssue}"></p>
     </div>
     <form action="#" th:action="@{/showMatrix}" th:object="${node}" method="post" class="form-inline">
-                <select th:field="*{parentNode}" id="parentNode" class="form-control">
-                    <option th:each="nd : ${listOfNodes}"
-                            th:value="${nd}"
-                            th:text="${nd}">node
-                    </option>
-                </select>
-                <button type="submit" class="btn btn-primary mb-2">Analyze</button>
+        <select th:field="*{parentNode}" id="parentNode" class="form-control">
+            <option th:each="nd : ${listOfNodes}"
+                    th:value="${nd}"
+                    th:text="${nd}">node
+            </option>
+        </select>
+        <button type="submit" class="btn btn-primary mb-2">Analyze</button>
     </form>
 </div>
 <div class="container" th:border="1">
@@ -109,12 +120,15 @@
             <td><p th:text="${node.nodeName}"/></td>
             <td><p th:text="${node.parentNode}"/></td>
             <td><p th:text="${node.size}"/></td>
-            <td><a th:href="@{/showFormUpdateNode/{id}(id=${node.id})}" class="btn btn-warning mb-1 col-2">Update</a>
-                <a th:href="@{/deleteNode/{id}(id=${node.id})}" class="btn btn-warning mb-1 col-2">Delete</a></td>
+            <td><a th:href="@{/showFormUpdateNode/{id}(id=${node.id})}" class="btn btn-primary mb-1 col-2">Update</a>
+                <a th:href="@{/deleteNode/{id}(id=${node.id})}" class="btn btn-danger mb-1 col-2">Delete</a></td>
         </tr>
         </tbody>
     </table>
 </div>
-
 </body>
+<div class="footer">
+    <p style="text-align:center; color: white">Developed by <a href="https://github.com/pathak-gaurav/">Gaurav Pathak</a>
+        for Dr.<a href="https://laurentian.ca/faculty/wkoczkodaj">Waldemar Koczkodaj</a> &copy; Copyright 2021 </p>
+</div>
 </html>

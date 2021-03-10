@@ -95,6 +95,9 @@ public class ConcluderController {
         }else if(node.getParentNode().equalsIgnoreCase(nodeById.getNodeName())){
             model.addAttribute("nodeNameIssue","You are trying to assign parent node, which you are going to remove by renaming node name. Try different");
             return "update_node";
+        }if (listOfNodes.contains(node.getNodeName())) {
+            model.addAttribute("nodeNameIssue", "Node name already exist, try different name");
+            return "update_node";
         }
         concluderService.updateNode(node);
         return "redirect:/";
